@@ -5,6 +5,7 @@ Contains the sample code and base project files for the Code Louisville QA Cours
 ## 1: Test Plan
 Identify an online web application to test. You may choose a “real” website, such as https://www.amazon.com/, https://www.ebay.com, or https://www.yahoo.com/, or you may use a “sample” website such as https://www.demoblaze.com/ or https://demoqa.com/books. Include the name of your chosen website in your submission. 
 Select one feature from this website and pretend that it was newly added to the application. Write a test plan for this new feature that includes at least 10 test cases. Indicate the type of each test case (critical path, regression, non-functional, etc) and include all of the necessary components of each test case (preconditions, steps, expected result, etc). 
+The test document should be written in a GitHub-supported text file format (.md, or Markdown, is highly recommended) and uploaded to your GitHub repository.
 Hint: refer to the 10-minute test plan supplemental reading if you need help deciding what to include.
 
 ## 2: Manual Test Execution
