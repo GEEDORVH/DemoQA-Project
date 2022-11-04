@@ -7,6 +7,14 @@ namespace CodeLouisvilleUnitTestProjectTests
 {
     public class VehicleTests
     {
+        public Vehicle _vehicleMaker;
+        public ITestOutputHelper _logger;
+        
+        public VehicleTests(ITestOutputHelper testOutputHelper)
+        {
+            _logger = testOutputHelper;
+            //_vehicleMaker = new Vehicle();
+        }
 
         //Verify the parameterless constructor successfully creates a new
         //object of type Vehicle, and instantiates all public properties
@@ -14,12 +22,25 @@ namespace CodeLouisvilleUnitTestProjectTests
         [Fact]
         public void VehicleParameterlessConstructorTest()
         {
+
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle();
+            
             //act
 
             //assert
-
+            using (new AssertionScope())
+            {
+                vehicle.Make.Should().BeNullOrEmpty();
+                vehicle.Model.Should().BeNullOrEmpty();
+                vehicle.MilesPerGallon.Should().Be(0);
+                vehicle.GasTankCapacity.Should().Be(0);
+                vehicle.NumberOfTires.Should().Be(0);
+                vehicle.GasLevel.Should().Be("NaN%");
+                vehicle.MilesRemaining.Should().Be(0);
+                vehicle.Mileage.Should().Be(0);
+            };
+            
         }
 
         //Verify the parameterized constructor successfully creates a new
@@ -29,10 +50,23 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void VehicleConstructorTest()
         {
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
+
             //act
 
             //assert
+            using (new AssertionScope())
+            {
+               
+                vehicle.Make.Should().Be("Honda");
+                vehicle.Model.Should().Be("Civic");
+                vehicle.MilesPerGallon.Should().Be(30);
+                vehicle.GasTankCapacity.Should().Be(10);
+                vehicle.NumberOfTires.Should().Be(4);
+                vehicle.GasLevel.Should().Be("0%");
+                vehicle.MilesRemaining.Should().Be(0);
+                vehicle.Mileage.Should().Be(0);
+            };
 
         }
 
@@ -79,15 +113,21 @@ namespace CodeLouisvilleUnitTestProjectTests
         //property returns the correct percentage when the gas level is
         //at 0%, 25%, 50%, 75%, and 100%.
         [Theory]
-        [InlineData("MysteryParamValue")]
-        public void GasLevelPercentageIsCorrectForAmountOfGas(params object[] yourParamsHere)
+        [InlineData("0%", 0)]
+        [InlineData("25%", 2.5)]
+        [InlineData("50%", 5.0)]
+        [InlineData("75%", 7.5)]
+        [InlineData("100%", 10)]
+        public void GasLevelPercentageIsCorrectForAmountOfGas(string percent, float gasToAdd)
         {
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
+
             //act
+            vehicle.AddGas(gasToAdd);
 
             //assert
-
+            vehicle.GasLevel.Should().Be(percent);
         }
 
         /*
