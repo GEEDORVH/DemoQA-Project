@@ -1,12 +1,18 @@
 ﻿using CodeLouisvilleUnitTestProject;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Xunit.Abstractions;
 
 namespace CodeLouisvilleUnitTestProjectTests
 {
     public class SemiTruckTests
     {
+        public ITestOutputHelper _logger;
 
+        public SemiTruckTests(ITestOutputHelper testOutputHelper)
+        {
+            _logger = testOutputHelper;
+        }
         //Verify that the SemiTruck constructor creates a new SemiTruck
         //object which is also a Vehicle and has 18 wheels. Verify that the
         //Cargo property for the newly created SemiTruck is a List of
@@ -15,11 +21,17 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void NewSemiTruckIsAVehicleAndHas18TiresAndEmptyCargoTest()
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
             //act
 
             //assert
-            
+            using (new AssertionScope())
+            {
+                semiTruck.NumberOfTires.Should().Be(18);
+                semiTruck.Cargo.Should().BeOfType<List<CargoItem>>();
+                semiTruck.Cargo.Should().BeEmpty();
+                semiTruck.Cargo.Should().NotBeNull();
+            };
         }
 
         //Verify that adding a CargoItem using LoadCargo does successfully add
@@ -29,10 +41,17 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void LoadCargoTest()
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
+            CargoItem cargoItem = new CargoItem();
             //act
-
+            semiTruck.Cargo.Count.Should().Be(0);
+            semiTruck.LoadCargo(cargoItem);
             //assert
+            using (new AssertionScope())
+            {
+                semiTruck.Cargo.Should().Contain(cargoItem);
+                semiTruck.Cargo.Count.Should().Be(1);
+            }
 
         }
 
@@ -42,10 +61,26 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void UnloadCargoWithValidCargoTest()
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
+            CargoItem cargoItem = new CargoItem();
+            cargoItem.Name = "ItemToRemove";
             //act
+            semiTruck.Cargo.Count.Should().Be(0);
+            semiTruck.LoadCargo(cargoItem);
+            using (new AssertionScope())
+            {
+                semiTruck.Cargo.Should().Contain(cargoItem);
+                semiTruck.Cargo.Count.Should().Be(1);
+            }
+            CargoItem removedItem = semiTruck.UnloadCargo("ItemToRemove");
 
             //assert
+            using (new AssertionScope())
+            {
+                semiTruck.Cargo.Count.Should().Be(0);
+                semiTruck.Cargo.Should().NotContain(cargoItem);
+                removedItem.Should().Be(cargoItem);
+            }
 
         }
 
@@ -55,10 +90,22 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void UnloadCargoWithInvalidCargoTest()
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
+
             //act
 
+
             //assert
+            Assert.Throws<ArgumentException>(() => semiTruck.UnloadCargo("ItemNotInCargo"));
+
+           
+
+
+            
+
+
+
+
 
         }
 

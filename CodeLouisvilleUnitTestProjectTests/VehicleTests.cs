@@ -13,7 +13,7 @@ namespace CodeLouisvilleUnitTestProjectTests
         public VehicleTests(ITestOutputHelper testOutputHelper)
         {
             _logger = testOutputHelper;
-            //_vehicleMaker = new Vehicle();
+            
         }
 
         //Verify the parameterless constructor successfully creates a new
@@ -24,10 +24,8 @@ namespace CodeLouisvilleUnitTestProjectTests
         {
 
             //arrange
-            Vehicle vehicle = new Vehicle();
-            
+            Vehicle vehicle = new Vehicle();           
             //act
-
             //assert
             using (new AssertionScope())
             {
@@ -51,9 +49,7 @@ namespace CodeLouisvilleUnitTestProjectTests
         {
             //arrange
             Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
-
             //act
-
             //assert
             using (new AssertionScope())
             {
@@ -76,11 +72,12 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void AddGasParameterlessFillsGasToMax()
         {
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
             //act
-
+            vehicle.GasLevel.Should().Be("0%");
+            vehicle.AddGas();
             //assert
-
+            vehicle.GasLevel.Should().Be("100%");
         }
 
         //Verify that the AddGas method with a parameter adds the
@@ -89,10 +86,12 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void AddGasWithParameterAddsSuppliedAmountOfGas()
         {
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
             //act
-
+            vehicle.GasLevel.Should().Be("0%");
+            vehicle.AddGas(5);
             //assert
+            vehicle.GasLevel.Should().Be("50%");
 
         }
 
@@ -102,11 +101,12 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void AddingTooMuchGasThrowsGasOverflowException()
         {
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
             //act
-
+            vehicle.GasLevel.Should().Be("0%");         
+            Action testAddGas = () => vehicle.AddGas(12);
             //assert
-
+            testAddGas.Should().Throw<GasOverfillException>();
         }
 
         //Using a Theory (or data-driven test), verify that the GasLevel
@@ -147,33 +147,100 @@ namespace CodeLouisvilleUnitTestProjectTests
          *      that GasLevel is correct, that MilesRemaining is correct, 
          *      and that the total mileage on the vehicle is correct.
          *      e. Drive the car until it runs out of gas. Verify that the 
-         *      correct amount of gas was used, that the correct distance 
-         *      was traveled, that GasLevel is correct, that MilesRemaining
+         *      correct amount of gas was used, the amount of gas left
          *      is correct, and that the total mileage on the vehicle is 
          *      correct. Verify that the status reports the car is out of gas.
         */
-        [Theory]
-        [InlineData("MysteryParamValue")]
-        public void DriveNegativeTests(params object[] yourParamsHere)
+        [Fact]
+        public void DriveWithoutGas()
         {
-            //arrange
-            throw new NotImplementedException();
-            //act
+            //Arrange
+            Vehicle vehicle = new Vehicle();
+            //Act
+            String driveWithoutGas = vehicle.Drive(10);
+            //Assert
+            driveWithoutGas.Should().Be("Cannot drive, out of gas.");
+        }
 
-            //assert
-
+        [Fact]
+        public void DriveWithFlatTire()
+        {
+            //Arrange
+            Vehicle vehicle = new Vehicle(1000, 100, "Honda", "Civic", 30);
+            //Act
+            vehicle.AddGas();
+            vehicle.Drive(100);
+            String driveWithFlatTire = vehicle.Drive(100);
+            //Assert
+            driveWithFlatTire.Should().Be("Cannot drive due to flat tire.");
         }
 
         [Theory]
-        [InlineData("MysteryParamValue")]
-        public void DrivePositiveTests(params object[] yourParamsHere)
+        [InlineData(0)]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(400)]
+        public void DrivingSpecTest(int distanceDrivenInput)
         {
-            //arrange
-            throw new NotImplementedException();
-            //act
-
-            //assert
-
+            // log scenario being tested 
+            _logger.WriteLine($"Case tested: Vehicle drives {distanceDrivenInput} miles");
+            //Arrange
+            Vehicle vehicle = new Vehicle(4, 10, "Honda", "Civic", 30);
+            double distanceDriven = distanceDrivenInput;
+            var beginningVehicleMileage = vehicle.Mileage;
+            var totalMilesInTank = vehicle.MilesPerGallon * vehicle.GasTankCapacity;
+            double gasLeftPercent = (totalMilesInTank - distanceDriven) / totalMilesInTank * 100;
+            
+            var gasUsed = Math.Round(distanceDriven / vehicle.MilesPerGallon, 2);
+            //Act
+            vehicle.AddGas();
+            var currentGasLevelPercent = Math.Round(double.Parse(vehicle.GasLevel.Replace("%", "")), 2);
+            // assertions to make sure the vehicle is instantiated correctly
+            using (new AssertionScope())
+            {
+                beginningVehicleMileage.Should().Be(0);
+                currentGasLevelPercent.Should().Be(100);
+            }
+            
+            String driveStatus = vehicle.Drive(distanceDriven);
+            var totalVehicleMileage = vehicle.Mileage;                                                        
+            currentGasLevelPercent = Math.Round(double.Parse(vehicle.GasLevel.Replace("%", "")), 2);
+            var milesRemaining = Math.Round(vehicle.MilesRemaining, 2);            
+            
+            //Assert
+            if (distanceDriven >= totalMilesInTank)
+            {
+                using (new AssertionScope())
+                {
+                    _logger.WriteLine($"{driveStatus}");
+                    _logger.WriteLine($"Vehicle mileage is: {totalVehicleMileage} miles, amount of gas used was: {vehicle.GasTankCapacity} gallons and current gas level is: {currentGasLevelPercent} percent."); 
+                    // total mileage on vehicle is correct
+                    totalVehicleMileage.Should().Be(beginningVehicleMileage + totalMilesInTank);
+                    // total distance driven and gas used
+                    driveStatus.Should().Be($"Drove {Math.Round(totalMilesInTank, 2)} miles, then ran out of gas.");
+                    // gas level remaining
+                    currentGasLevelPercent.Should().Be(0);
+                    // miles remaining
+                    milesRemaining.Should().Be(0);                    
+                }                
+            }
+            else
+            {
+                using (new AssertionScope())
+                {
+                    _logger.WriteLine($"{driveStatus}");
+                    _logger.WriteLine($"Vehicle mileage is: {totalVehicleMileage} miles, amount of gas used was: {gasUsed} gallons and current gas level is: {currentGasLevelPercent} percent.");
+                    // total mileage on vehicle is correct
+                    totalVehicleMileage.Should().Be(distanceDriven + beginningVehicleMileage);
+                    // total distance driven and gas used
+                    driveStatus.Should().Be($"Drove {Math.Round(distanceDriven, 2)} miles using {Math.Round(gasUsed, 2)} gallons of gas.");
+                    // gas level remaining
+                    currentGasLevelPercent.Should().Be(Math.Round(gasLeftPercent, 2));
+                    // miles remaining
+                    milesRemaining.Should().Be(Math.Round((totalMilesInTank - distanceDriven), 2));                  
+                }
+            }
+            
         }
 
         //Verify that attempting to change a flat tire using
@@ -182,12 +249,13 @@ namespace CodeLouisvilleUnitTestProjectTests
         [Fact]
         public async Task ChangeTireWithoutFlatTest()
         {
-            //arrange
-            throw new NotImplementedException();
-            //act
-
-            //assert
-
+            //Arrange
+            Vehicle vehicle = new Vehicle(4, 100, "Honda", "Civic", 30);
+            //Act
+            Func<Task> changeTire = async () => { await vehicle.ChangeTireAsync(); };
+            //Assert
+            await changeTire.Should().ThrowAsync<NoTireToChangeException>();
+            
         }
 
         //Verify that ChangeTireAsync can successfully
@@ -196,21 +264,25 @@ namespace CodeLouisvilleUnitTestProjectTests
         public async Task ChangeTireSuccessfulTest()
         {
             //arrange
-            throw new NotImplementedException();
+            Vehicle vehicle = new Vehicle(4, 100, "Honda", "Civic", 30);
             //act
-
+            vehicle._hasFlatTire = true;
+            await vehicle.ChangeTireAsync();
             //assert
-
+            vehicle._hasFlatTire.Should().Be(false);
+            
         }
 
         //BONUS: Write a unit test that verifies that a flat
         //tire will occur after a certain number of miles.
         [Theory]
-        [InlineData("MysteryParamValue")]
-        public void GetFlatTireAfterCertainNumberOfMilesTest(params object[] yourParamsHere)
+        [InlineData(0)]
+        [InlineData(10)]
+        [InlineData(200)]
+        public void GetFlatTireAfterCertainNumberOfMilesTest(int milesDriven)
         {
             //arrange
-            throw new NotImplementedException();
+            
             //act
 
             //assert

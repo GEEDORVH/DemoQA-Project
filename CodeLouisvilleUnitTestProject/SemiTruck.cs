@@ -1,4 +1,7 @@
-﻿namespace CodeLouisvilleUnitTestProject
+﻿using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
+
+namespace CodeLouisvilleUnitTestProject
 {
     public class SemiTruck : Vehicle
     {
@@ -10,7 +13,8 @@
         public SemiTruck()
         {
             //YOUR CODE HERE: 
-            throw new NotImplementedException();
+            NumberOfTires = 18;
+            Cargo = new List<CargoItem>();
         }
 
         /// <summary>
@@ -20,7 +24,7 @@
         public void LoadCargo(CargoItem item)
         {
             //YOUR CODE HERE
-            throw new NotImplementedException();
+            Cargo.Add(item);
         }
             
         /// <summary>
@@ -31,8 +35,26 @@
         /// <exception cref="ArgumentException">Thrown if no CargoItem in the Cargo matches the passed name</exception>
         public CargoItem UnloadCargo(string name)
         {
+            CargoItem itemToRemove = new CargoItem();
             //YOUR CODE HERE
-            throw new NotImplementedException();
+            for (int i = 0; i < Cargo.Count; i++)
+            {
+                int counter = 0;
+                if (Cargo[i].Name == name && counter == 0)
+                {
+                    itemToRemove = Cargo[i];   
+                    Cargo.Remove(itemToRemove);
+                    counter++;
+                }
+            }
+            if (itemToRemove.Name == null)
+            {
+                throw new ArgumentException();
+            }
+            else
+            {
+                return itemToRemove;
+            }
         }
 
         /// <summary>
@@ -42,8 +64,18 @@
         /// <returns>A List of CargoItems with the exact name passed</returns>
         public List<CargoItem> GetCargoItemsByName(string name)
         {
+            List<CargoItem> matchingItems  = new List<CargoItem>();
             //YOUR CODE HERE
-            throw new NotImplementedException();
+            for (int i = 0; i < Cargo.Count; i++)
+            {
+                if (Cargo[i].Name == name)
+                {
+                    CargoItem matchingItem = Cargo[i];
+                    matchingItems.Add(matchingItem);
+                    
+                }
+            }
+            return matchingItems;
         }
 
         /// <summary>
@@ -53,8 +85,18 @@
         /// <returns>A List of CargoItems with a description containing the passed description</returns>
         public List<CargoItem> GetCargoItemsByPartialDescription(string description)
         {
+            List<CargoItem> matchingItemsByDescription = new List<CargoItem>();
             //YOUR CODE HERE
-            throw new NotImplementedException();
+            for (int i = 0; i < Cargo.Count; i++)
+            {
+                if (Cargo[i].Description.Contains(description)) 
+                {
+                    CargoItem matchingItemByDescription = Cargo[i];
+                    matchingItemsByDescription.Add(matchingItemByDescription);
+
+                }
+            }
+            return matchingItemsByDescription;
         }
 
         /// <summary>
@@ -63,8 +105,13 @@
         /// <returns>An integer representing the sum of all Quantity properties on all CargoItems</returns>
         public int GetTotalNumberOfItems()
         {
+            int totalNumberOfItems = 0;
             //YOUR CODE HERE
-            throw new NotImplementedException();
+            for (int i = 0; i < Cargo.Count; i++)
+            {
+                totalNumberOfItems += Cargo[i].Quantity;
+            }
+            return totalNumberOfItems;
         }
     }
 }

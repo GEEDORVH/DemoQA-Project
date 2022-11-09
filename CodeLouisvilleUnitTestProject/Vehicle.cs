@@ -13,10 +13,14 @@
         public double Mileage => _mileage;
         #endregion
 
+        #region Public Fields
+        public bool _hasFlatTire;
+        #endregion
+
         #region Private Fields
         private double _gasRemaining;
         private double _mileage;
-        private bool _hasFlatTire;
+        
         #endregion
 
         #region Private Properties
@@ -105,7 +109,7 @@
             return statusString;
         }
 
-        protected async Task ChangeTireAsync()
+        public async Task ChangeTireAsync()
         {
             if (!_hasFlatTire)
                 throw new NoTireToChangeException();
