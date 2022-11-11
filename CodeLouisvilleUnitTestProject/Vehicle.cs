@@ -3,8 +3,8 @@
     public class Vehicle
     {
         #region Public Properties
-        public string Make { get; }
-        public string Model { get; }
+        public string Make { get; set; }
+        public string Model { get; set; }
         public double MilesPerGallon { get; set; }
         public double GasTankCapacity { get; init; }
         public int NumberOfTires { get; init; }

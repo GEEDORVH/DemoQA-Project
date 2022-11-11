@@ -94,32 +94,42 @@ namespace CodeLouisvilleUnitTestProjectTests
 
             //act
 
-
             //assert
             Assert.Throws<ArgumentException>(() => semiTruck.UnloadCargo("ItemNotInCargo"));
-
-           
-
-
-            
-
-
-
-
 
         }
 
         //Verify that getting cargo items by name returns all items
         //in Cargo with that name.
-        [Fact]
-        public void GetCargoItemsByNameWithValidName()
+        [Theory]
+        [InlineData("Item1", 0)]
+        [InlineData("Item2", 2)]
+        [InlineData("Item3", 100)]
+        public void GetCargoItemsByNameWithValidName(string nameOfItemToRemove, int itemCountWithSameNameInCargoList)
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
+            CargoItem cargoItem = new CargoItem();
+            cargoItem.Name = nameOfItemToRemove;
+            
+            for (int i = 0; i < itemCountWithSameNameInCargoList; i++)
+            {
+                semiTruck.LoadCargo(cargoItem);
+            }
+            
             //act
-
+            
+            List<CargoItem> cargoItemsRemoved = semiTruck.GetCargoItemsByName(nameOfItemToRemove);
             //assert
-
+            using (new AssertionScope())
+            {
+                cargoItemsRemoved.Should().HaveCount(itemCountWithSameNameInCargoList);
+                for (int i = 0; i < cargoItemsRemoved.Count; i++)
+                {
+                    cargoItemsRemoved[i].Name.Should().Be(nameOfItemToRemove);
+                }
+            }
+            
         }
 
         //Verify that searching the Carto list for an item that does not
@@ -128,23 +138,45 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void GetCargoItemsByNameWithInvalidName()
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
             //act
-
+            List<CargoItem> cargoItemListShouldBeEmpty = semiTruck.GetCargoItemsByName("itemNotInCargo");
             //assert
-
+            cargoItemListShouldBeEmpty.Should().BeEmpty();
         }
 
         //Verify that searching the Cargo list by description for an item
         //that does exist returns all matched items that contain that description.
-        [Fact]
-        public void GetCargoItemsByPartialDescriptionWithValidDescription()
+        [Theory]
+        [InlineData("custom description", 0)]
+        [InlineData("four score", 2)]
+        [InlineData("seven years ago", 100)]
+        public void GetCargoItemsByPartialDescriptionWithValidDescription(string description, int itemsInListMatchingCount)
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
+            CargoItem cargoItem = new CargoItem();
+            CargoItem cargoItemUnrelated = new CargoItem(); 
+            cargoItem.Description = "Stuff before to test contains " + description + " stuff after to test contains";
+           
             //act
-
+            semiTruck.LoadCargo(cargoItemUnrelated);
+            for (int i = 0; i < itemsInListMatchingCount; i++)
+            {
+                semiTruck.LoadCargo(cargoItem);
+            }
+            List<CargoItem> cargoItemsRemovedByDescription = semiTruck.GetCargoItemsByPartialDescription(description);
             //assert
+
+            using (new AssertionScope())
+            {
+                cargoItemsRemovedByDescription.Should().HaveCount(itemsInListMatchingCount);
+                for (int i = 0; i < cargoItemsRemovedByDescription.Count; i++)
+                {
+                    cargoItemsRemovedByDescription[i].Description.Should().Contain(description);
+                }
+
+            }
 
         }
 
@@ -154,24 +186,34 @@ namespace CodeLouisvilleUnitTestProjectTests
         public void GetCargoItemsByPartialDescriptionWithInvalidDescription()
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
             //act
-
+            List<CargoItem> cargoItems = semiTruck.GetCargoItemsByPartialDescription("These do not exist");
             //assert
-
+            cargoItems.Should().BeEmpty();
         }
 
         //Verify that the method returns the sum of all quantities of all
         //items in the Cargo
-        [Fact]
-        public void GetTotalNumberOfItemsReturnsSumOfAllQuantities()
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(2, 10)]
+        [InlineData(100, 3)]
+        public void GetTotalNumberOfItemsReturnsSumOfAllQuantities(int quantity, int numberOfItems)
         {
             //arrange
-            throw new NotImplementedException();
+            SemiTruck semiTruck = new SemiTruck();
+            CargoItem cargoItem = new CargoItem();
+            cargoItem.Quantity = quantity;
+            for (int i = 0; i < numberOfItems; i++)
+            {
+                semiTruck.LoadCargo(cargoItem);
+            }
             //act
-
+            int expectedTotalQuantity = quantity * numberOfItems;
+            int actualTotalQuantity = semiTruck.GetTotalNumberOfItems();
             //assert
-
+            actualTotalQuantity.Should().Be(expectedTotalQuantity);
         }
     }
 }

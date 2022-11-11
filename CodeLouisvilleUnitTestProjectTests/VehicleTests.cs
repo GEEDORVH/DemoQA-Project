@@ -7,7 +7,7 @@ namespace CodeLouisvilleUnitTestProjectTests
 {
     public class VehicleTests
     {
-        public Vehicle _vehicleMaker;
+
         public ITestOutputHelper _logger;
         
         public VehicleTests(ITestOutputHelper testOutputHelper)

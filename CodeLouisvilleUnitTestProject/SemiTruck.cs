@@ -89,7 +89,11 @@ namespace CodeLouisvilleUnitTestProject
             //YOUR CODE HERE
             for (int i = 0; i < Cargo.Count; i++)
             {
-                if (Cargo[i].Description.Contains(description)) 
+                if (Cargo[i].Description == null)
+                {
+
+                }
+                else if (Cargo[i].Description.Contains(description)) 
                 {
                     CargoItem matchingItemByDescription = Cargo[i];
                     matchingItemsByDescription.Add(matchingItemByDescription);
@@ -109,7 +113,7 @@ namespace CodeLouisvilleUnitTestProject
             //YOUR CODE HERE
             for (int i = 0; i < Cargo.Count; i++)
             {
-                totalNumberOfItems += Cargo[i].Quantity;
+                totalNumberOfItems = totalNumberOfItems + Cargo[i].Quantity;
             }
             return totalNumberOfItems;
         }
