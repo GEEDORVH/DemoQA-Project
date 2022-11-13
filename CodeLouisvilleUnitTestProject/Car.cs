@@ -44,11 +44,11 @@ namespace CodeLouisvilleUnitTestProject
                 var response = await _httpClient.GetAsync(getUrl);
                 var respMessage = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
 
-                List<MakeModelSpecs> makeModelSpecs = JsonConvert.DeserializeObject<List<MakeModelSpecs>>(respMessage);
+                MakeModelSpecsRoot makeModelSpecs = JsonConvert.DeserializeObject<MakeModelSpecsRoot>(respMessage);
 
-                for (int i =0; i < makeModelSpecs.Count; i++)
+                for (int i =0; i < makeModelSpecs.Results.Count; i++)
                 {
-                    if (makeModelSpecs[i].ModelName == this.Model)
+                    if (makeModelSpecs.Results[i].ModelName == this.Model)
                     {
                         isValidForMake = true;
                     }
