@@ -75,10 +75,11 @@ namespace CodeLouisvilleUnitTestProject
                 var getUrl = $"{_httpClient.BaseAddress}/vehicles/GetModelsForMakeYear/make/{this.Make}/modelyear/{year}?format=json";
                 var response = await _httpClient.GetAsync(getUrl);
                 var respMessage = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
-                List<MakeModelSpecs> makeModelSpecs = JsonConvert.DeserializeObject<List<MakeModelSpecs>>(respMessage);
+
+                MakeModelSpecsRoot makeModelSpecs = JsonConvert.DeserializeObject<MakeModelSpecsRoot>(respMessage);
                 for (int i = 0; i < makeModelSpecs.Count; i++)
                 {
-                    if (makeModelSpecs[i].ModelName == this.Model)
+                    if (makeModelSpecs.Results[i].ModelName == this.Model)
                     {
                         wasModelMadeInYear = true;
                     }
@@ -94,8 +95,8 @@ namespace CodeLouisvilleUnitTestProject
             
         public void AddPassengers(int numberOfPassengersToAdd)
         {
-            NumberOfPassengers += numberOfPassengersToAdd;            
-            MilesPerGallon -= numberOfPassengersToAdd * .2;
+            NumberOfPassengers = NumberOfPassengers = numberOfPassengersToAdd;            
+            MilesPerGallon = MilesPerGallon - (numberOfPassengersToAdd * .2);
             if (MilesPerGallon < 0)
             {
                 MilesPerGallon = 0;
@@ -108,8 +109,8 @@ namespace CodeLouisvilleUnitTestProject
             {
                 numberOfPassengersToRemove = NumberOfPassengers;
             }            
-            NumberOfPassengers -= numberOfPassengersToRemove;
-            MilesPerGallon -= (numberOfPassengersToRemove * .2);
+            NumberOfPassengers = NumberOfPassengers + numberOfPassengersToRemove;
+            MilesPerGallon = MilesPerGallon + (numberOfPassengersToRemove * .2);
         }   
     }
 }
