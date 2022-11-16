@@ -202,11 +202,19 @@ namespace CodeLouisvilleUnitTestProjectTests
                 currentGasLevelPercent.Should().Be(100);
             }
             
-            String driveStatus = vehicle.Drive(distanceDriven);
-            var totalVehicleMileage = vehicle.Mileage;                                                        
-            currentGasLevelPercent = Math.Round(double.Parse(vehicle.GasLevel.Replace("%", "")), 2);
-            var milesRemaining = Math.Round(vehicle.MilesRemaining, 2);            
+            String driveStatus = vehicle.Drive(distanceDriven);   
             
+            /*
+            while (driveStatus.Contains("Oh no! Got a flat tire!"))
+            {
+                vehicle._hasFlatTire = false;   
+                driveStatus = vehicle.Drive(distanceDriven);
+            }
+            */
+
+            var totalVehicleMileage = vehicle.Mileage;
+            currentGasLevelPercent = Math.Round(double.Parse(vehicle.GasLevel.Replace("%", "")), 2);
+            var milesRemaining = Math.Round(vehicle.MilesRemaining, 2);
             //Assert
             if (distanceDriven >= totalMilesInTank)
             {
